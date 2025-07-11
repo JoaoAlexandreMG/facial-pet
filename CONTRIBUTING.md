@@ -14,7 +14,7 @@ Esta seção te orienta através do envio de um relatório de bug para o Facial 
 
 #### Como enviar um (bom) relatório de bug?
 
-Bugs são rastreados como [GitHub issues](https://github.com/seu-usuario/facial-pet/issues). Crie um issue e forneça as seguintes informações:
+Bugs são rastreados como [GitHub issues](https://github.com/JoaoAlexandreMG/facial-pet/issues). Crie um issue e forneça as seguintes informações:
 
 * **Use um título claro e descritivo** para o issue para identificar o problema.
 * **Descreva os passos exatos que reproduzem o problema** com o máximo de detalhes possível.
