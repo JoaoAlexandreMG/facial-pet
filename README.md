@@ -72,7 +72,7 @@ Facilitar o controle de presença em eventos, aulas ou reuniões, eliminando a n
 ### 1. Clone o Repositório
 
 ```bash
-git clone https://github.com/seu-usuario/facial-pet.git
+git clone https://github.com/JoaoAlexandreMG/facial-pet.git
 cd facial-pet
 ```
 
@@ -250,7 +250,7 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 
 ## 👥 Autores
 
-- **Seu Nome** - *Desenvolvimento inicial* - [SeuGitHub](https://github.com/seu-usuario)
+- **João Alexandre** - *Desenvolvimento inicial* - [JoaoAlexandreMG](https://github.com/JoaoAlexandreMG)
 
 ## 🙏 Agradecimentos
 
@@ -261,9 +261,9 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 
 ## 📞 Suporte
 
-- 📧 Email: seu-email@exemplo.com
-- 💬 Issues: [GitHub Issues](https://github.com/seu-usuario/facial-pet/issues)
-- 📖 Documentação: [Wiki](https://github.com/seu-usuario/facial-pet/wiki)
+- 📧 Email: joao.alexandre@exemplo.com
+- 💬 Issues: [GitHub Issues](https://github.com/JoaoAlexandreMG/facial-pet/issues)
+- 📖 Documentação: [Wiki](https://github.com/JoaoAlexandreMG/facial-pet/wiki)
 
 ---
 
