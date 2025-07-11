@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2><i class="bi bi-search"></i> Reconhecer Pessoa</h2>
+  <div class="mb-3">
+    <label class="form-label">Tirar foto com webcam</label><br>
+    <video id="video" width="320" height="240" autoplay style="border:2px solid #00bfae; border-radius:10px;"></video>
+    <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+    <br>
+    <button type="button" class="btn btn-primary btn-lg mt-2" id="btn-reconhecer"><i class="bi bi-search"></i> Reconhecer Agora</button>
+    <div id="preview" class="mt-2"></div>
+  </div>
+  <div id="resultado" class="alert alert-info mt-4" style="display:none;"></div>
+</div>
+<script>
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const btnReconhecer = document.getElementById('btn-reconhecer');
+const resultado = document.getElementById('resultado');
+
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+    video.srcObject = stream;
+    video.play();
+  });
+}
+
+btnReconhecer.onclick = function() {
+  canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+  const dataUrl = canvas.toDataURL('image/jpeg');
+  resultado.style.display = 'none';
+  fetch('/reconhecer', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'img_data_url=' + encodeURIComponent(dataUrl)
+  })
+  .then(response => response.json())
+  .then(data => {
+    resultado.style.display = 'block';
+    if(data.success) {
+      resultado.innerHTML = '<i class="bi bi-person-badge"></i> <strong>Resultado:</strong> ' + data.nome;
+    } else {
+      resultado.innerHTML = '<i class="bi bi-exclamation-triangle"></i> <strong>Erro:</strong> ' + data.msg;
+    }
+  })
+  .catch(() => {
+    resultado.style.display = 'block';
+    resultado.innerHTML = '<i class="bi bi-exclamation-triangle"></i> <strong>Erro:</strong> Falha ao processar.';
+  });
+};
+</script>
+{% endblock %}

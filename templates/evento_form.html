@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="main-content">
+  <h2 class="section-title"><i class="bi bi-plus-circle"></i> Novo Evento</h2>
+  <form method="post">
+    <div class="mb-3">
+      <label class="form-label">Nome do Evento</label>
+      <input type="text" class="form-control" name="nome" placeholder="Digite o nome do evento" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Descrição</label>
+      <textarea class="form-control" name="descricao" rows="2" placeholder="Digite uma descrição"></textarea>
+    </div>
+    <div class="row">
+      <div class="col">
+        <label class="form-label">Data Início</label>
+        <input type="date" class="form-control" name="data_inicio">
+      </div>
+      <div class="col">
+        <label class="form-label">Data Fim</label>
+        <input type="date" class="form-control" name="data_fim">
+      </div>
+    </div>
+    <button type="submit" class="btn btn-lg w-100 mt-4"><i class="bi bi-check-circle"></i> Salvar Evento</button>
+  </form>
+</div>
+{% endblock %}

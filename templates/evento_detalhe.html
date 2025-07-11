@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0 fw-bold"><i class="bi bi-calendar-event me-2"></i>{{ evento.nome }}</h2>
+    <a href="{{ url_for('eventos') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Voltar</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="bg-white p-4 rounded-3 border h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0 text-primary"><i class="bi bi-clock-history me-2"></i>Momentos</h4>
+                <a href="{{ url_for('novo_momento', evento_id=evento.id) }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle me-1"></i> Novo Momento</a>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for momento in momentos %}
+                <li class="list-group-item d-flex justify-content-between align-items-center px-1">
+                    <div>
+                        <span class="fw-medium">{{ momento.nome }}</span>
+                        <br>
+                        <small class="text-muted">{{ momento.data }} - {{ momento.periodo }}</small>
+                    </div>
+                    <div class="d-flex gap-2 align-items-center">
+                        <a href="{{ url_for('presenca', momento_id=momento.id) }}" class="btn btn-sm btn-outline-primary" title="Registrar Presença">
+                            <i class="bi bi-person-check"></i>
+                        </a>
+                        <form method="post" action="{{ url_for('excluir_momento', moment_id=momento.id) }}" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir este momento?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir Momento">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </li>
+                {% else %}
+                <li class="list-group-item text-center text-muted">Nenhum momento cadastrado.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="bg-white p-4 rounded-3 border h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0 text-primary"><i class="bi bi-people-fill me-2"></i>Participantes</h4>
+                <a href="{{ url_for('novo_participante', evento_id=evento.id) }}" class="btn btn-primary btn-sm"><i class="bi bi-person-plus me-1"></i> Novo Participante</a>
+            </div>
+            
+            <p class="text-muted small">Adicione participantes já cadastrados no sistema a este evento.</p>
+            <form id="form-adicionar-participante" method="post" action="{{ url_for('adicionar_participante_evento', evento_id=evento.id) }}" class="mb-4">
+                <div class="input-group">
+                    <input type="text" id="busca-participante" class="form-control" placeholder="Buscar por nome..." autocomplete="off">
+                    <input type="hidden" name="participante_id" id="participante_id">
+                    <button type="submit" id="btn-adicionar-participante" class="btn btn-primary" disabled><i class="bi bi-plus-circle"></i> Adicionar</button>
+                </div>
+                <div id="autocomplete-list" class="list-group position-absolute w-100 shadow" style="z-index: 1050; max-height: 200px; overflow-y: auto;"></div>
+            </form>
+
+            <h5 class="fs-6 fw-medium border-top pt-3">Inscritos e Estatísticas de Presença</h5>
+            
+            <form method="post" action="{{ url_for('remover_participantes_evento', evento_id=evento.id) }}" onsubmit="return confirm('Tem certeza que deseja remover os participantes selecionados?');">
+                <div class="list-group list-group-flush mb-3">
+                    {% for p in percentuais %}
+                    <div class="list-group-item px-1">
+                        <div class="d-flex w-100 justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <input class="form-check-input me-3" type="checkbox" name="remover" value="{{ participantes[loop.index0].id }}" title="Marcar para remover">
+                                <span class="fw-medium">{{ p.nome }}</span>
+                            </div>
+                            <small class="text-muted">{{ p.presencas }} de {{ p.total }} momentos</small>
+                        </div>
+                        <div class="progress mt-2" style="height: 10px;">
+                            <div class="progress-bar" role="progressbar" style="width: {{ p.percentual }}%;" aria-valuenow="{{ p.percentual }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="list-group-item text-center text-muted">Nenhum participante neste evento.</p>
+                    {% endfor %}
+                </div>
+
+                {% if percentuais %}
+                <button type="submit" class="btn btn-danger btn-sm">
+                    <i class="bi bi-trash me-1"></i> Remover Selecionados
+                </button>
+                {% endif %}
+            </form>
+            </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }} 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const buscaInput = document.getElementById('busca-participante');
+            const participanteIdInput = document.getElementById('participante_id');
+            const addButton = document.getElementById('btn-adicionar-participante');
+            const autocompleteList = document.getElementById('autocomplete-list');
+    
+            async function buscarParticipantes(query) {
+                if (query.length < 2) {
+                    autocompleteList.innerHTML = '';
+                    autocompleteList.style.display = 'none';
+                    return;
+                }
+                try {
+                    const todos = {{ participantes_disponiveis | safe }};
+                    
+                    const filtrados = todos.filter(p => p.nome.toLowerCase().includes(query.toLowerCase()));
+    
+                    autocompleteList.innerHTML = '';
+                    if (filtrados.length > 0) {
+                        filtrados.forEach(p => {
+                            const item = document.createElement('a');
+                            item.href = '#';
+                            item.className = 'list-group-item list-group-item-action';
+                            item.textContent = p.nome;
+                            
+                            item.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                buscaInput.value = p.nome;
+                                participanteIdInput.value = p.id;
+                                addButton.disabled = false;
+                                autocompleteList.style.display = 'none';
+                            });
+                            autocompleteList.appendChild(item);
+                        });
+                        autocompleteList.style.display = 'block';
+                    } else {
+                        autocompleteList.style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Erro ao buscar participantes:', error);
+                    autocompleteList.style.display = 'none';
+                }
+            }
+    
+            buscaInput.addEventListener('keyup', (e) => buscarParticipantes(e.target.value));
+    
+            document.addEventListener('click', function(e) {
+                if (e.target !== buscaInput) {
+                    autocompleteList.style.display = 'none';
+                }
+            });
+        });
+    </script>
+{% endblock %}

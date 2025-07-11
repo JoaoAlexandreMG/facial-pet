@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="section-title"><i class="bi bi-calendar-event"></i> Eventos</h2>
+<div class="card-panel">
+  <div class="actions-bar mb-3">
+    <a href="{{ url_for('novo_evento') }}" class="btn btn-action"><i class="bi bi-plus-circle"></i> Novo Evento</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Descrição</th>
+          <th>Período</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for evento in eventos %}
+        <tr>
+          <td class="fw-bold">{{ evento['nome'] }}</td>
+          <td>{{ evento['descricao'] or '-' }}</td>
+          <td>{{ evento['data_inicio'] }}{% if evento['data_fim'] %} a {{ evento['data_fim'] }}{% endif %}</td>
+          <td class="d-flex gap-2">
+            <a href="{{ url_for('ver_evento', evento_id=evento['id']) }}" class="btn btn-sm btn-primary"><i class="bi bi-eye"></i> Detalhes</a>
+            <form method="post" action="{{ url_for('excluir_evento', evento_id=evento['id']) }}" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir este evento? Esta ação não pode ser desfeita.');">
+              <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i> Excluir</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

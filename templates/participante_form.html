@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+  /* Define a paleta de cores para manter a consistência */
+  :root {
+    --preto: #212529;
+    --cinza-claro: #f8f9fa;
+    --azul-principal: #0d6efd;
+    --branco: #ffffff;
+    --cinza-texto: #6c757d;
+  }
+
+  /* Fundo suave para a página inteira */
+  .main-content {
+    background-color: var(--cinza-claro);
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  /* Estilo do Card do Formulário */
+  .form-card {
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden; /* Garante que os cantos arredondados sejam aplicados a todos os filhos */
+  }
+
+  /* Cabeçalho customizado para o card */
+  .card-header-custom {
+    background: linear-gradient(90deg, rgba(13,110,253,1) 0%, rgba(0,123,255,1) 100%);
+    color: var(--branco);
+    padding: 1.5rem;
+    border-bottom: none;
+  }
+
+  .card-header-custom .icon {
+    font-size: 1.75rem;
+    vertical-align: middle;
+    margin-right: 0.75rem;
+  }
+
+  .card-body {
+    padding: 2.5rem;
+  }
+
+  .form-label {
+    font-weight: 600;
+    color: var(--cinza-texto);
+  }
+
+  /* Estiliza a área da webcam para ser mais atrativa */
+  .webcam-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #e9ecef; /* Um cinza um pouco mais escuro para destaque */
+    border-radius: 0.5rem;
+  }
+
+  #video,
+  #preview img {
+    border: 3px solid var(--azul-principal);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  /* Divisor "OU" entre as opções de imagem */
+  .form-divider {
+    text-align: center;
+    margin: 2rem 0;
+    font-weight: 500;
+    color: var(--cinza-texto);
+    text-transform: uppercase;
+    position: relative;
+  }
+  .form-divider::before,
+  .form-divider::after {
+    content: '';
+    display: block;
+    width: 40%;
+    height: 1px;
+    background-color: #dee2e6;
+    position: absolute;
+    top: 50%;
+  }
+  .form-divider::before { left: 0; }
+  .form-divider::after { right: 0; }
+
+</style>
+
+<div class="main-content">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-7">
+
+        <div class="card form-card">
+          <div class="card-header card-header-custom text-center">
+            <h2 class="h4 mb-0"><i class="bi bi-person-plus icon"></i> Novo Participante</h2>
+          </div>
+
+          <div class="card-body">
+            <form method="post" enctype="multipart/form-data" id="form-participante">
+
+              <div class="mb-4">
+                <label for="nome" class="form-label">Nome do Participante</label>
+                <input type="text" class="form-control form-control-lg" id="nome" name="nome" placeholder="Digite o nome completo" required>
+              </div>
+
+              <div class="mb-3 text-center">
+                <label class="form-label">Tire uma foto com a webcam</label>
+                <div class="webcam-area">
+                  <video id="video" width="320" height="240" autoplay muted class="rounded shadow-sm"></video>
+                  <button type="button" class="btn btn-secondary" id="btn-capturar"><i class="bi bi-camera-fill"></i> Capturar Foto</button>
+                  <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+                  <input type="hidden" name="img_data_url" id="img_data_url">
+                  <div id="preview" class="mt-2"></div>
+                </div>
+              </div>
+
+              <div class="form-divider">ou</div>
+
+              <div class="mb-4">
+                <label for="imagem" class="form-label">Selecione uma imagem</label>
+                <input type="file" class="form-control" id="imagem" name="imagem" accept="image/*">
+              </div>
+
+              <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-check-circle-fill"></i> Cadastrar Participante</button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const btnCapturar = document.getElementById('btn-capturar');
+const imgDataUrl = document.getElementById('img_data_url');
+const preview = document.getElementById('preview');
+
+// Adicionado 'muted' ao autoplay para compatibilidade com navegadores modernos
+video.setAttribute('playsinline', '');
+video.setAttribute('muted', '');
+
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+    video.srcObject = stream;
+    video.play();
+  });
+}
+
+btnCapturar.onclick = function() {
+  canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+  const dataUrl = canvas.toDataURL('image/jpeg');
+  imgDataUrl.value = dataUrl;
+  preview.innerHTML = `<img src="${dataUrl}" width="160" class="mt-2 rounded shadow"/>`;
+};
+</script>
+
+{% endblock %}
