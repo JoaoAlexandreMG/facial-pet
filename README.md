@@ -261,7 +261,7 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 
 ## 📞 Suporte
 
-- 📧 Email: joao.alexandre@exemplo.com
+- 📧 Email: j.sa@ufu.br
 - 💬 Issues: [GitHub Issues](https://github.com/JoaoAlexandreMG/facial-pet/issues)
 - 📖 Documentação: [Wiki](https://github.com/JoaoAlexandreMG/facial-pet/wiki)
 
